@@ -13,3 +13,6 @@ See the 'help', for all the details and various options.
 Obviously NO guarantee whatsoever that this will work 100% of the times! 
 And I have NOT checked when it breaks down in term of rotation angle or displacement. All I can claim is that it does a good job with our data (young and old healthy subjects + AD/PD patients)...
 
+The code was originally written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium).
+
+For questions or suggestions, contact Christophe Phillips (c.phillips_at_ulg.ac.be).
