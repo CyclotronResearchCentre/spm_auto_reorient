@@ -33,7 +33,6 @@ function spm_auto_reorient(p,i_type,p_other)
 
 % Code originally written by Carlton Chu, FIL, UCL, London, UK
 % Modified and extended by Christophe Phillips, CRC, ULg, Liege, Belgium
-% $Id:$
 
 %% Check inputs
 if nargin<1 || isempty(p)

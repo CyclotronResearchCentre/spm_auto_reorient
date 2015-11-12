@@ -1,9 +1,10 @@
 function autoreor = spm_cfg_autoreorient
 % SPM Configuration file for spm_auto_reorient
 %_______________________________________________________________________
-% Copyright (C) 2011 Wellcome Trust Centre for Neuroimaging
+% Copyright (C) 2011 Cyclotron Research Centre
 
-% $Id:$
+% Written by C. Phillips, 2011.
+% Cyclotron Research Centre, University of Liege, Belgium
 
 % ---------------------------------------------------------------------
 % image Image to reorient
