@@ -17,4 +17,4 @@ The code was originally written by Carlton Chu (FIL, UCL, London, UK) then modif
 
 For questions or suggestions, contact Christophe Phillips (c.phillips_at_ulg.ac.be).
 
-[![DOI](https://zenodo.org/badge/49490279.svg)](https://zenodo.org/badge/latestdoi/49490279)
+[![DOI](https://zenodo.org/badge/46079046.svg)](https://zenodo.org/badge/latestdoi/46079046)
