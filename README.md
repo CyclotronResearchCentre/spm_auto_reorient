@@ -1,20 +1,41 @@
-# `spm_auto_reorient`
-A few routines to perform "auto reorient" in SPM.
-
-Setting up the AC-PC and reorienting images is a recurrent issue as the "unified segmentation" process is (can be) sensitive to the starting orientation of the image... So we came up with some automatic solution.
-The main function, `spm\_auto\_reorient.m`, automatically (but approximately) rigib-body reorients a T1 image (or any other usual image modality) in the MNI space, i.e. mainly set the AC location and correct for head rotation, in order to further proceed with the segmentation/normalisation of the image. Note that this relies on a "template matching" principle (as in the old normalize function), you therefore ought to specify the appropriate template/reference image.
-
-
-The tool can be included in the batching system of SPM12 by 
-- adding the `spm\_cfg\_autoreorient.m` function in to the spm\config sub-directory. Then this module can be included in any processing pipeline;
-- overwriting the `spm\_cfg.m` with this one, so that the module appears in the SPM\spatial pull-down menu.
-See the 'help', for all the details and various options.
-
-Obviously NO guarantee whatsoever that this will work 100% of the times! 
-And I have NOT checked when it breaks down in term of rotation angle or displacement. All I can claim is that it does a good job with our data (young and old healthy subjects + AD/PD patients)...
-
-The code was originally written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium).
-
-For questions or suggestions, contact Christophe Phillips (c.phillips_at_ulg.ac.be).
-
+# spm_auto_reorient : Automatic AC-PC realignment/reorientation using template matching in SPM
 [![DOI](https://zenodo.org/badge/46079046.svg)](https://zenodo.org/badge/latestdoi/46079046)
+
+This is a set of routines to perform "auto reorient" in the toolbox [Statistical Parametric Mapping 12 (SPM12)](https://www.fil.ion.ucl.ac.uk/spm/).
+
+## Description
+Setting up the AC-PC and reorienting images is a recurrent issue in between-subjects group analyses, since they rely on coregistration methods that, like the "unified segmentation" of SPM12, are for most sensitive to initial conditions (the starting orientation of the image). This routine is a somewhat enhanced version of the original code by [John Ashburner](https://en.wikibooks.org/wiki/SPM/How-to#How_to_automatically_reorient_images?).
+
+The main function, `spm_auto_reorient.m`, automatically (but approximately) calculates a non-linear coregistration of the input image onto a target template in MNI space, and then applies only the rigid-body transform part of this coregistration to reorient the input image. This allows to mainly set the AC location and correct for head rotation, in order to further proceed with the segmentation/normalisation of the image. This relies on a "template matching" principle (as in the old normalize function), you therefore ought to specify the appropriate template/reference image (we provide some).
+
+In any case, it is advised to check the automatically reoriented images, and [fix the orientation manually (SPM -> Display)](https://en.wikibooks.org/wiki/SPM/How-to#How_to_manually_change_the_orientation_of_an_image?) if necessary.
+
+## Install
+
+To install this tool :
+* copy `spm_auto_reorient.m` in your `spm` folder. This will allow the command `spm_auto_reorient()` to be called from command-line (if no argument is given, a file selector dialog will open).
+* copy `T1_template_CAT12_rm_withskull.nii` to your `spm/canonical` folder. This is a template generated on 10 subjects using CAT12 that were manually reoriented to AC-PC, this provides a better performance.
+
+The tool can be included in the batching system of SPM12 by : 
+- copying the `spm_cfg_autoreorient.m` file to the `spm/config` sub-directory. Then this module can be included in any processing pipeline;
+- optionally, if you want an easy access from the SPM's spatial pull-down menu directly, by overwriting the `spm_cfg.m` with the one provided here (BEWARE: this was not updated since a long time, this may break down your SPM install!).
+
+## Usage
+
+Type `help spm_auto_reorient`, for all the details and various options.
+
+## Guarantee
+There is no guarantee that this will work 100% of the times, although it was observed to produce good results with our own data (young and old healthy subjects, AD/PD patients, most of brain damaged patients even with significant movement artefacts).
+
+For a comparison of various methods for AC-PC reorientation, the following article is a good read:
+
+`Liu, Yuan, and Benoit M. Dawant. "Automatic detection of the anterior and posterior commissures on MRI scans using regression forests." 2014 36th Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE, 2014.`
+
+## Authors
+The code was originally written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium) and additional modifications by Stephen Karl Larroque (Coma Science Group, GIGA-Consciousness, University of Liege, Belgium).
+
+## License
+General Public License (GPL) v2
+
+## Contact
+For questions or suggestions, contact Christophe Phillips (c.phillips_at_ulg.ac.be).
