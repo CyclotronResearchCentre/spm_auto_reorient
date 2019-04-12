@@ -43,9 +43,11 @@ function spm_auto_reorient(p,i_type,p_other,smooth_factor)
 %   if any were specified.
 %__________________________________________________________________________
 % Copyright (C) 2011 Cyclotron Research Centre
-
+% Copyright (C) 2019 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
+%
 % Code originally written by Carlton Chu, FIL, UCL, London, UK
 % Modified and extended by Christophe Phillips, CRC, ULg, Liege, Belgium
+% Updated by Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege, Belgium
 
 %% Check inputs
 if nargin<1 || isempty(p)
@@ -62,7 +64,7 @@ if nargin<3 || isempty(p_other{1}{1})
     p_other = cell(Np,1);
 end
 if numel(p_other)~= Np
-    error('crc:autoreorient','Wrong number of other images to reorient!');
+    error('Wrong number of other images to reorient!');
 end
 
 if nargin<4 || isempty(smooth_factor)
@@ -87,7 +89,13 @@ switch lower(i_type)
         tmpl = fullfile(spm('dir'),'canonical','single_subj_T1.nii');
     case 't1group',
         tmpl = fullfile(spm('dir'),'canonical','T1_template_CAT12_rm_withskull.nii');  % you need to add this file into spm/canonical
-    otherwise, error('Unknown image type')
+        if ~exist(tmpl, 'file') == 2  % if template cannot be found in spm folder, try to look locally, in same folder as current script
+            % Build the path to current script (because pwd is unreliable)
+            scriptpath = mfilename('fullpath');
+            scriptdir = fileparts(scriptpath); % get the parent directory of the current script
+            tmpl = fullfile(scriptdir, 'T1_template_CAT12_rm_withskull.nii');  % this file needs to be in the same folder as this script
+        end %endif
+    otherwise, error('Unknown template image type')
 end
 vg = spm_vol(tmpl);  % get template image
 
