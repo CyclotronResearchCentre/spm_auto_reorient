@@ -1,6 +1,6 @@
-function spm_auto_reorient(p,i_type,p_other,smooth_factor)
+function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor)
 
-% FORMAT spm_auto_reorient(p,i_type,p_other)
+% FORMAT spm_auto_reorient(p,i_type,p_other,mode,smooth_factor)
 %
 % Function to automatically (but approximately) rigib-body reorient
 % a T1 image (or any other usual image modality) in the MNI space,
@@ -21,6 +21,8 @@ function spm_auto_reorient(p,i_type,p_other,smooth_factor)
 % argument and put all the other images in a cell in the 2rd argument (see
 % here under).
 %
+% If mode 'mi' is selected, the origin will also be changed to match AC.
+%
 % It is advised to check (and fix if necessary) manually the result.
 %
 % IN:
@@ -34,7 +36,8 @@ function spm_auto_reorient(p,i_type,p_other,smooth_factor)
 % - p_other : cell array of filenames of other images to be reoriented as
 %             the corresponding p image. Should be of same length as p, or
 %             left empty (default).
-% - smooth_factor : smoothing kernel (isotropic). Default: 20. Usually, a big kernel helps in coregistering
+% - mode    : coregister using the old 'affine' method, or the new 'mi' Mutual Information method or 'both' (first affine then mi) (default)
+% - smooth_factor : smoothing kernel (isotropic) for the affine coregistration. Default: 20. Usually, a big kernel helps in coregistering
 %             to template, particularly for brain damaged patients, but might also help with healthy volunteers.
 %             However, a too big kernel will also result in suboptimal coregistration. 20 is good for T1.
 %
@@ -42,12 +45,15 @@ function spm_auto_reorient(p,i_type,p_other,smooth_factor)
 % - the header of the selected images is modified, so are the other images
 %   if any were specified.
 %__________________________________________________________________________
+% v1.2
 % Copyright (C) 2011 Cyclotron Research Centre
 % Copyright (C) 2019 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
 % Code originally written by Carlton Chu, FIL, UCL, London, UK
 % Modified and extended by Christophe Phillips, CRC, ULg, Liege, Belgium
-% Updated by Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege, Belgium
+% Updated and extended by Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege, Belgium
+%
+% Licensed under GPL (General Public License) v2
 
 %% Check inputs
 if nargin<1 || isempty(p)
@@ -60,14 +66,18 @@ if nargin<2 || isempty(i_type)
     i_type = 'T1group';
 end
 
-if nargin<3 || isempty(p_other{1}{1})
+if nargin<3 || isempty(p_other) || isempty(p_other{1}{1})
     p_other = cell(Np,1);
 end
 if numel(p_other)~= Np
     error('Wrong number of other images to reorient!');
 end
 
-if nargin<4 || isempty(smooth_factor)
+if nargin<4 || isempty(mode)
+    mode = 'affine';
+end
+
+if nargin<5 || isempty(smooth_factor)
     smooth_factor = 20;
 end
 
@@ -97,47 +107,96 @@ switch lower(i_type)
         end %endif
     otherwise, error('Unknown template image type')
 end
-vg = spm_vol(tmpl);  % get template image
 
-% Configure coregistration to template (will be the basis of the reorientation)
-flags.sep = 5;  % sampling distance. Reducing this enhances a bit the reorientation but significantly increases processing time.
-flags.regtype = 'mni';  % can be 'none', 'rigid', 'subj' or 'mni'. On brain damaged patients, 'mni' seems to give the best results (non-affine transform), but we don't use the scaling factor anyway. See also a comparison in: Liu, Yuan, and Benoit M. Dawant. "Automatic detection of the anterior and posterior commissures on MRI scans using regression forests." 2014 36th Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE, 2014.
+% AFFINE COREGISTRATION
+M_aff_mem = {};
+if strcmp(mode,'affine') | strcmp(mode,'both')
+    fprintf('Affine reorientation, please wait...\n');
+    % Configure coregistration to template (will be the basis of the reorientation)
+    flags.sep = 5;  % sampling distance. Reducing this enhances a bit the reorientation but significantly increases processing time.
+    flags.regtype = 'mni';  % can be 'none', 'rigid', 'subj' or 'mni'. On brain damaged patients, 'mni' seems to give the best results (non-affine transform), but we don't use the scaling factor anyway. See also a comparison in: Liu, Yuan, and Benoit M. Dawant. "Automatic detection of the anterior and posterior commissures on MRI scans using regression forests." 2014 36th Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE, 2014.
 
-%% Treat each image p at a time
+    % Load template image
+    Vtemplate = spm_vol(tmpl);
+    %% Treat each image p at a time
+    for ii = 1:Np
+        % Load source image to reorient to template, create a temporary file (to avoid permission issues) and smooth to ease coregistration to template
+        source = strtrim(p(ii,:));
+        spm_smooth(source,'temp.nii',[smooth_factor smooth_factor smooth_factor]);
+        Vsource = spm_vol('temp.nii');
+        % estimate reorientation
+        [M, scal] = spm_affreg(Vtemplate,Vsource,flags);
+        M3 = M(1:3,1:3);
+        [u s v] = svd(M3);
+        M3 = u*v';
+        M(1:3,1:3) = M3;
+        % Memorize to apply on other images later
+        M_aff_mem{ii} = M;
+        % apply it on image p
+        N = nifti(source);
+        N.mat = M*N.mat;
+        % Save the transform into nifti file headers
+        create(N);
+        % clean up
+        delete('temp.nii');
+    end %endfor
+end %endif
+
+% MUTUAL INFORMATION COREGISTRATION
+M_mi_mem = {};
+if strcmp(mode,'mi') | strcmp(mode,'both')
+    fprintf('Mutual information reorientation, please wait...\n');
+    % Configure coregistration
+    flags2.cost_fun = 'ncc';
+    % Load template image
+    Vtemplate = spm_vol(tmpl);
+    %% Treat each image p at a time
+    for ii = 1:Np
+        % Load source image to reorient to template
+        % NB: no need for smoothing here since the joint histogram is smoothed
+        source = strtrim(p(ii,:));
+        Vsource = spm_vol(source);
+        % Estimate reorientation from source image to reference (structural) image
+        M_mi = spm_coreg(Vtemplate,Vsource,flags2);
+        % Memorize to apply on other images later
+        M_mi_mem{ii} = M_mi;
+        % apply it on source image
+        N = nifti(source);
+        N.mat = spm_matrix(M_mi)\N.mat;
+        % Save the transform into nifti file headers
+        create(N);
+    end %endfor
+end %endif
+
+% Apply the reorientation transform onto other images (if specified), without recalculating, so that we keep motion information if any
 for ii = 1:Np
-    % get image, create a temporary file (to avoid permission issues) and smooth to ease coregistration to template
-    f = strtrim(p(ii,:));
-    spm_smooth(f,'temp.nii',[smooth_factor smooth_factor smooth_factor]);
-    vf = spm_vol('temp.nii');
-    % estimate reorientation
-    [M, scal] = spm_affreg(vg,vf,flags);
-    M3 = M(1:3,1:3);
-    [u s v] = svd(M3);
-    M3 = u*v';
-    M(1:3,1:3) = M3;
-    % apply it on image p
-    N = nifti(f);
-    N.mat = M*N.mat;
-    create(N);
-    % apply it on other images
-    No = size(p_other{ii},1);
-    for jj = 1:No
-        fo = strtrim(p_other{ii}{jj});
-        if ~isempty(fo) && ~strcmp(f,fo)
-            % allow case where :
-            % - noname was passed
-            % - name is same as the image used for the reorient
-            % => skip
-            N = nifti(fo);
-            N.mat = M*N.mat;
+    % Load the appropriate transforms
+    if strcmp(mode,'affine') | strcmp(mode,'both'), M = M_aff_mem{ii}; end
+    if strcmp(mode,'mi') | strcmp(mode,'both'), M_mi = M_mi_mem{ii}; end
+    % For each other image
+    for jj = 1:size(p_other{ii},1);
+        % Get file path
+        source_other = strtrim(p_other{ii}{jj});
+        if ~isempty(fo) && ~strcmp(source,source_other)  % If filepath is empty or same as source functional, just skip
+            % Load volume
+            N = nifti(source_other);
+            if strcmp(mode,'affine') | strcmp(mode,'both')
+                % Apply affine transform
+                N.mat = M*N.mat;
+            end %endif
+            if strcmp(mode,'mi') | strcmp(mode,'both')
+                % Apply Mutual Information rigid-body transform
+                N.mat = spm_matrix(M_mi)\N.mat;
+            end %endif
+            % Save the transform into nifti file headers
             create(N);
-        end
-    end
-    % clean up
-    delete('temp.nii');
-end
+        end %endif
+    end %endfor
+end %endfor
 
-end
+fprintf('Automatic reorientation done.\n');
+
+end %endfunction
 
 
 % % test
