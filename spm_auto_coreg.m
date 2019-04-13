@@ -18,21 +18,23 @@ function spm_auto_coreg(struct,func,others,mode,modality)
 % OUT:
 % - the voxel-to-world part of the headers of the selected source (func) and others images is modified.
 %__________________________________________________________________________
-% v1.0.2
+% v1.0.3
 % License: GPL (General Public License) v2
 % Copyright (C) 2019 Stephen Karl Larroque - Coma Science Group - GIGA-Consciousness - University & Hospital of Liege
 
 %% Check inputs
 if nargin<1 || isempty(struct)
-    struct = spm_select(inf,'image','Select structural image');
+    struct = spm_select(1,'image','Select structural image');
 end
 if nargin<2 || isempty(func)
-    func = spm_select(inf,'image','Select functional image');
+    func = spm_select(1,'image','Select first functional image');
 end
 if iscell(struct), struct = char(struct); end
 if iscell(func), func = char(func); end
 
-if nargin<3 || isempty(others)
+if nargin<3
+    others = spm_select(Inf,'image','Select other functional images');  % to ease usage by non programmers, most will want to apply the transform on other EPI images too
+elseif isempty(others)
     others = [];
 end
 if ~isempty(others) & iscell(others), others = char(others); end
@@ -53,7 +55,11 @@ fprintf('Pre-coregistration on %s template, please wait...\n', modality);
 spm_auto_reorient(func, modality, others, mode);
 % COREGISTRATION ONTO STRUCTURAL
 fprintf('Coregistration to structural, please wait...\n');
-spm_auto_reorient(func, struct, others, mode);
+% if selected by gui (spm_select), then there will be a frame number, then we need to extract it from the path
+[pth,nam,ext,n] = spm_fileparts(struct);
+structpath = fullfile(pth,[nam ext]);
+% coregister to structural
+spm_auto_reorient(func, structpath, others, mode);
 
 fprintf('Automatic coregistration done.\n');
 
