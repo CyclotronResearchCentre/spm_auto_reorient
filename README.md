@@ -31,6 +31,14 @@ Type `help spm_auto_reorient`, for all the details and various options.
 ## Guarantee
 There is no guarantee that this will work 100% of the times, although it was observed to produce good results with our own data (young and old healthy subjects, AD/PD patients, most of brain damaged patients even with significant movement or metal artefacts).
 
+The best results we got were by doing the following steps:
+1. Call spm_auto_reorient() on the structural in MNI space, so that it is also matching other SPM templates
+2. Manually review and fix the misoriented structural images
+3. Coregister the functional to SPM12 EPI template (this allows a correct translation matrix and a good basis for rotation)
+4. Coregister the functional onto the structural (this fine-tunes rotation to precisely match the subject's structural)
+
+The last 2 steps can be done by calling `spm_auto_coreg()`, which has optimized default parameters for this task.
+
 For a comparison of various methods for AC-PC reorientation, the following article is a good read:
 
 `Liu, Yuan, and Benoit M. Dawant. "Automatic detection of the anterior and posterior commissures on MRI scans using regression forests." 2014 36th Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE, 2014.`
