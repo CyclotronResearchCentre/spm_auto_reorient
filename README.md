@@ -1,7 +1,9 @@
 # spm_auto_reorient : Automatic AC-PC realignment/reorientation using template matching in SPM
 [![DOI](https://zenodo.org/badge/46079046.svg)](https://zenodo.org/badge/latestdoi/46079046)
 
-This is a set of routines to perform "auto reorient" in the toolbox [Statistical Parametric Mapping 12 (SPM12)](https://www.fil.ion.ucl.ac.uk/spm/).
+This is a set of routines to perform "auto reorient" and "auto coregistration" in the toolbox [Statistical Parametric Mapping 12 (SPM12)](https://www.fil.ion.ucl.ac.uk/spm/).
+
+![Automatic coregistration example using spm_auto_coreg.m](img/coreg.png)
 
 ## Description
 Setting up the AC-PC and reorienting images is a recurrent issue in between-subjects group analyses, since they rely on coregistration methods that, like the "unified segmentation" of SPM12, are for most sensitive to initial conditions (the starting orientation of the image). This routine is a somewhat enhanced version of the original code by [John Ashburner](https://en.wikibooks.org/wiki/SPM/How-to#How_to_automatically_reorient_images?).
@@ -27,7 +29,7 @@ The tool can be included in the batching system of SPM12 by :
 Type `help spm_auto_reorient`, for all the details and various options.
 
 ## Guarantee
-There is no guarantee that this will work 100% of the times, although it was observed to produce good results with our own data (young and old healthy subjects, AD/PD patients, most of brain damaged patients even with significant movement artefacts).
+There is no guarantee that this will work 100% of the times, although it was observed to produce good results with our own data (young and old healthy subjects, AD/PD patients, most of brain damaged patients even with significant movement or metal artefacts).
 
 For a comparison of various methods for AC-PC reorientation, the following article is a good read:
 
