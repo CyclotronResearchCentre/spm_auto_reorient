@@ -6,14 +6,16 @@ This is a set of routines to perform "auto reorient" in the toolbox [Statistical
 ## Description
 Setting up the AC-PC and reorienting images is a recurrent issue in between-subjects group analyses, since they rely on coregistration methods that, like the "unified segmentation" of SPM12, are for most sensitive to initial conditions (the starting orientation of the image). This routine is a somewhat enhanced version of the original code by [John Ashburner](https://en.wikibooks.org/wiki/SPM/How-to#How_to_automatically_reorient_images?).
 
-The main function, `spm_auto_reorient.m`, automatically (but approximately) calculates a non-linear coregistration of the input image onto a target template in MNI space, and then applies only the rigid-body transform part of this coregistration to reorient the input image. This allows to mainly set the AC location and correct for head rotation, in order to further proceed with the segmentation/normalisation of the image. This relies on a "template matching" principle (as in the old normalize function), you therefore ought to specify the appropriate template/reference image (we provide some).
+The main function, `spm_auto_reorient.m`, automatically (but approximately) calculates a reorientation transform onto a target template in MNI space, in two steps: 1. a non-linear coregistration of the input image onto a target template in MNI space using spm_affreg is calculated, then another transform is calculated using Mutual Information on a joint histogram (spm_coreg), and then applies only the rigid-body transform part of both coregistrations to reorient the input image. This allows to mainly set the AC location and correct for head rotation and place the origin on AC, in order to further proceed with the segmentation/normalisation of the image. This relies on a "template matching" principle (as in the old normalize function), you therefore ought to specify the appropriate template/reference image (we provide some).
 
 In any case, it is advised to check the automatically reoriented images, and [fix the orientation manually (SPM -> Display)](https://en.wikibooks.org/wiki/SPM/How-to#How_to_manually_change_the_orientation_of_an_image?) if necessary.
+
+Another function, `spm_auto_coreg.m`, expands on the same ideas to allow coregistration between modalities (eg, between structural and functional). It is advised that `spm_auto_reorient()` to be first applied before applying `spm_auto_coreg()` (even if you do manually fix the reorientation, as this ensures that the T1 is somewhat in the MNI space, making it easier for `spm_auto_coreg()` to find the correct translation matrix).
 
 ## Install
 
 To install this tool :
-* copy `spm_auto_reorient.m` in your `spm` folder. This will allow the command `spm_auto_reorient()` to be called from command-line (if no argument is given, a file selector dialog will open).
+* copy `spm_auto_reorient.m` and `spm_auto_coreg.m` in your `spm` folder. This will allow the command `spm_auto_reorient()` and `spm_auto_coreg()` to be called from command-line (if no argument is given, a file selector dialog will open).
 * copy `T1_template_CAT12_rm_withskull.nii` to your `spm/canonical` folder. This is a template generated on 10 subjects using CAT12 that were manually reoriented to AC-PC, this provides a better performance.
 
 The tool can be included in the batching system of SPM12 by : 
