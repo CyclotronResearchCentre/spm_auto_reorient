@@ -23,7 +23,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % argument and put all the other images in a cell in the 2rd argument (see
 % here under).
 %
-% If mode 'mi' is selected, the origin will also be changed to match AC-PC plane.
+% If mode 'mi' is selected, the origin will also be changed to match AC.
 %
 % It is advised to check (and fix if necessary) manually the result.
 %
