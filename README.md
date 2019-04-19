@@ -37,7 +37,7 @@ The best results we got were by doing the following steps:
 3. Coregister the functional to SPM12 EPI template (this allows a correct translation matrix and a good basis for rotation)
 4. Coregister the functional onto the structural (this fine-tunes rotation to precisely match the subject's structural)
 
-The last 2 steps can be done by calling `spm_auto_coreg()`, which has optimized default parameters for this task.
+The last 2 steps can be done by calling `spm_auto_coreg()`, which has optimized default parameters for this task. For indication, on a dataset of 100 subjects with some heavily brain damaged or artifacted, the coregistration success rate was more than 95%.
 
 For a comparison of various methods for AC-PC reorientation, the following article is a good read:
 

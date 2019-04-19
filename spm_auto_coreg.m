@@ -3,7 +3,7 @@ function spm_auto_coreg(struct,func,others,mode,modality)
 % FORMAT spm_auto_coreg(struct,func,others,mode,modality)
 %
 % Function to coregister functional (or other modalities) to structural images
-% using rigid-body transform via a Mutual Information calculation on Joint Histograms.
+% using rigid-body transform via either an euclidian coregistration or a Mutual Information calculation on Joint Histograms.
 % Works on SPM12.
 %
 % It is advised to check (and fix if necessary) manually the result (using CheckReg).
@@ -18,7 +18,7 @@ function spm_auto_coreg(struct,func,others,mode,modality)
 % OUT:
 % - the voxel-to-world part of the headers of the selected source (func) and others images is modified.
 %__________________________________________________________________________
-% v1.0.3
+% v1.0.5
 % License: GPL (General Public License) v2
 % Copyright (C) 2019 Stephen Karl Larroque - Coma Science Group - GIGA-Consciousness - University & Hospital of Liege
 
@@ -53,13 +53,22 @@ end
 % If this is not done, most often the coregistration will get the rotation right but not the translation
 fprintf('Pre-coregistration on %s template, please wait...\n', modality);
 spm_auto_reorient(func, modality, others, mode);
+if strcmp(mode, 'precoreg')
+    % Useful for debugging, we can only do the precoregistration and then leave
+    return
+end
 % COREGISTRATION ONTO STRUCTURAL
 fprintf('Coregistration to structural, please wait...\n');
 % if selected by gui (spm_select), then there will be a frame number, then we need to extract it from the path
 [pth,nam,ext,n] = spm_fileparts(struct);
 structpath = fullfile(pth,[nam ext]);
+% configure flags to optimize coregistration
+flags_mi.cost_fun = 'ecc';  % ncc works remarkably well, when it works, else it fails very badly... ecc works better on some edge cases than mi and nmi
+flags_mi.tol = [0.1, 0.1, 0.02, 0.02, 0.02, 0.001, 0.001, 0.001, 0.01, 0.01, 0.01, 0.001, 0.001, 0.001, 0.0002, 0.0001, 0.00002];  % VERY important to get good results. This defines the amount of displacement tolerated. We start with one single big step allowed, to correct after the pre-coregistration if it somehow failed, and then we use the defaults from SPM GUI with progressively finer steps, repeated 2 times (multistart approach).
+flags_mi.fwhm = [1, 1];  % reduce smoothing for more efficient coregistering, since the pre-coregistration normally should have placed the brain quite in the correct spot overall. This greatly enhances results, particularly on brain damaged subjects.
+flags_mi.sep = [4 2 1];  % use [4 2 1] if you want to use a finer grained step at the end at 1mm, this can help to get more precise coregistration in some cases but at the cost of a quite longer computing time, this greatly help for a few hard cases
 % coregister to structural
-spm_auto_reorient(func, structpath, others, mode);
+spm_auto_reorient(func, structpath, others, mode, [], [], flags_mi);
 
 fprintf('Automatic coregistration done.\n');
 
