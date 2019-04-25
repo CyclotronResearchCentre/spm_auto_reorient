@@ -21,6 +21,7 @@ Another function, `spm_auto_coreg.m`, expands on the same ideas to allow coregis
 To install this tool :
 * copy `spm_auto_reorient.m` and `spm_auto_coreg.m` in your `spm` folder. This will allow the command `spm_auto_reorient()` and `spm_auto_coreg()` to be called from command-line (if no argument is given, a file selector dialog will open).
 * copy `T1_template_CAT12_rm_withskull.nii` to your `spm/canonical` folder. This is a template generated on 10 subjects using CAT12 that were manually reoriented to AC-PC, this provides a better performance.
+* Add `spm12` and `spm12\toolbox\OldNorm` to the path in MATLAB.
 
 The tool can be included in the batching system of SPM12 by : 
 - copying the `spm_cfg_autoreorient.m` file to the `spm/config` sub-directory. Then this module can be included in any processing pipeline;

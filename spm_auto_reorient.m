@@ -51,7 +51,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % - the header of the selected images is modified, so are the other images
 %   if any were specified.
 %__________________________________________________________________________
-% v1.3.2
+% v1.3.3
 % Copyright (C) 2011 Cyclotron Research Centre
 % Copyright (C) 2019 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
@@ -63,7 +63,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 
 %% Check inputs
 if nargin<1 || isempty(p)
-    p = spm_select(inf,'image');
+    p = spm_select(inf,'image','Select nifti files to reorient');
 end
 if iscell(p), p = char(p); end
 Np = size(p,1);
@@ -159,10 +159,16 @@ if strcmp(mode,'affine') | strcmp(mode,'both')
         else
             Vtemplate = spm_vol(tmpl);
         end %endif
-        % Load source image to reorient to template, create a temporary file (to avoid permission issues) and smooth to ease coregistration to template
+        % Load source image to reorient to template
         source = strtrim(p(ii,:));
-        spm_smooth(source,'temp.nii',[smooth_factor smooth_factor smooth_factor]);
-        Vsource = spm_vol('temp.nii');
+        Vsource = spm_vol(source);
+        % smooth to ease coregistration to template
+        Vsourcesmoothed = zeros(Vsource.dim(1:3));  % prevent spm_smooth() from saving the smoothing back to the file, by creating a temporary variable where to store the smoothed image
+        spm_smooth(Vsource,Vsourcesmoothed,[smooth_factor smooth_factor smooth_factor]);  % TODO: should update to spm_smoothkern()? Check spm_realign()
+        % put the smoothed data back to the original struct, from https://www.jiscmail.ac.uk/cgi-bin/webadmin?A2=ind1808&L=spm&P=R27983&1=spm&9=A&I=-3&J=on&d=No+Match%3BMatch%3BMatches&z=4 and https://github.com/spm/spm12/blob/r7219/spm_spm.m#L522
+        Vsource.dat = Vsourcesmoothed;
+        Vsource.dt = [spm_type('float64') spm_platform('bigend')];  % necessary to make the data readable in-memory
+        Vsource.pinfo = [1 0 0]';  % necessary to make the data readable in-memory
         % estimate reorientation
         [M, scal] = spm_affreg(Vtemplate,Vsource,flags);
         M3 = M(1:3,1:3);
@@ -171,13 +177,11 @@ if strcmp(mode,'affine') | strcmp(mode,'both')
         M(1:3,1:3) = M3;
         % Memorize to apply on other images later
         M_aff_mem{ii} = M;
-        % apply it on image p
+        % Reload source image to apply the transform on it
         N = nifti(source);
         N.mat = M*N.mat;
         % Save the transform into nifti file headers
         create(N);
-        % clean up
-        delete('temp.nii');
     end %endfor
 end %endif
 
