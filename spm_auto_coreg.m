@@ -63,7 +63,7 @@ fprintf('Coregistration to structural, please wait...\n');
 [pth,nam,ext,n] = spm_fileparts(struct);
 structpath = fullfile(pth,[nam ext]);
 % configure flags to optimize coregistration
-flags_mi.cost_fun = 'nmi';  % ncc works remarkably well, when it works, else it fails very badly, particularly for between-modalities coregistration... ecc works better on some edge cases than mi and nmi for coregistration but it can also fail very hard. mi and nmi are more robust but give slightly less precise results.
+flags_mi.cost_fun = 'ecc';  % ncc works remarkably well, when it works, else it fails very badly, particularly for between-modalities coregistration... ecc works better on some edge cases than mi and nmi for coregistration
 flags_mi.tol = [0.1, 0.1, 0.02, 0.02, 0.02, 0.001, 0.001, 0.001, 0.01, 0.01, 0.01, 0.001, 0.001, 0.001, 0.0002, 0.0001, 0.00002];  % VERY important to get good results. This defines the amount of displacement tolerated. We start with one single big step allowed, to correct after the pre-coregistration if it somehow failed, and then we use the defaults from SPM GUI with progressively finer steps, repeated 2 times (multistart approach).
 flags_mi.fwhm = [1, 1];  % reduce smoothing for more efficient coregistering, since the pre-coregistration normally should have placed the brain quite in the correct spot overall. This greatly enhances results, particularly on brain damaged subjects.
 flags_mi.sep = [4 2 1];  % use [4 2 1] if you want to use a finer grained step at the end at 1mm, this can help to get more precise coregistration in some cases but at the cost of a quite longer computing time, this greatly help for a few hard cases
