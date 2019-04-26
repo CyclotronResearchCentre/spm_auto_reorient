@@ -51,7 +51,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % - the header of the selected images is modified, so are the other images
 %   if any were specified.
 %__________________________________________________________________________
-% v1.3.3
+% v1.3.4
 % Copyright (C) 2011 Cyclotron Research Centre
 % Copyright (C) 2019 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
@@ -191,7 +191,7 @@ if strcmp(mode,'mi') | strcmp(mode,'both')
     fprintf('Mutual information reorientation, please wait...\n');
     % Configure coregistration
     if ~isempty(flags_mi)
-        flags2 = flags_mi
+        flags2 = flags_mi;
     else
         flags2.cost_fun = 'ecc';  % ncc works remarkably well, when it works, else it fails very badly... Also ncc should only be used for within-modality coregistration (TODO: test if for reorientation it works well, even on very damaged/artefacted brains?)
         flags2.tol = [0.02, 0.02, 0.02, 0.001, 0.001, 0.001, 0.01, 0.01, 0.01, 0.001, 0.001, 0.001];  % VERY important to get good results, these are defaults from the GUI
