@@ -58,7 +58,7 @@ For a comparison of various methods for AC-PC reorientation, the following artic
 
 Please cite this work as following (a paper is in preparation but not available yet):
 
-> Stephen Karl Larroque, Christophe Phillips. (2019, July 8). spm_auto_reorient_coregister v1.3.4. Zenodo. [http://doi.org/10.5281/zenodo.3270912](http://doi.org/10.5281/zenodo.3270912)
+> Stephen Karl Larroque, Christophe Phillips. (2019, July 8). spm_auto_reorient_coregister v1.3.4. Zenodo. RRID: SCR_017281. [http://doi.org/10.5281/zenodo.3270912](http://doi.org/10.5281/zenodo.3270912)
 
 ## Authors
 
