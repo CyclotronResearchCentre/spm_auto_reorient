@@ -1,4 +1,4 @@
-# spm_auto_reorient : Cross-platform automatic AC-PC realignment/reorientation and coregistration robust to brain damage in SPM
+# spm_auto_reorient_v2 : Cross-platform automatic AC-PC realignment/reorientation and coregistration robust to brain damage in SPM
 [![DOI](https://zenodo.org/badge/46079046.svg)](https://zenodo.org/badge/latestdoi/46079046)
 
 Cross-platform automatic AC-PC realignment/reorientation and coregistration for both healthy volunteers and brain damaged patients using template matching in SPM 12.
@@ -20,7 +20,7 @@ Another function, `spm_auto_coreg.m`, expands on the same ideas to allow coregis
 
 To install this tool :
 * copy `spm_auto_reorient.m` and `spm_auto_coreg.m` in your `spm` folder. This will allow the command `spm_auto_reorient()` and `spm_auto_coreg()` to be called from command-line (if no argument is given, a file selector dialog will open).
-* copy `T1_template_CAT12_rm_withskull.nii` to your `spm/canonical` folder. This is a template generated on 10 subjects using CAT12 that were manually reoriented to AC-PC, this provides a better performance.
+* copy `T1_template_CAT12_rm_withskull.nii` to your `spm/canonical` folder. This is a template generated on 10 subjects using CAT12 that were manually reoriented to AC-PC and averaged, this provides better performance for reorientation than the more blurry MNI template. Note that this template is slightly better aligned to the AC-PC plane than the original MNI template, so that there may be a slight rotation bias compared to MNI if you use this custom template (usually it's mostly unnoticeable and this should have no influence if afterwards you do the SPM normalization on MNI on your data).
 * Add `spm12` and `spm12\toolbox\OldNorm` to the path in MATLAB.
 
 The tool can be included in the batching system of SPM12 by : 
@@ -29,13 +29,20 @@ The tool can be included in the batching system of SPM12 by :
 
 ## Usage
 
-Type `help spm_auto_reorient`, for all the details and various options.
+Type `help spm_auto_reorient`, for all the details and various options for reorientation of a T1.
+
+Type `help spm_auto_coregister` for coregistering options.
+
+General guideline:
+
+* If you want to reorient isotropic T1, use `spm_auto_reorient`.
+* If you want to reorient another modality (usually with less resolution), or an anisotropic T1, or an isotropic T1 but on your own custom T1 template, use `spm_auto_coregister`.
 
 ## Guarantee
 There is no guarantee that this will work 100% of the times, although it was observed to produce good results with our own data (young and old healthy subjects, AD/PD patients, most of brain damaged patients even with significant movement or metal artefacts).
 
 The best results we got were by doing the following steps:
-1. Call spm_auto_reorient() on the structural in MNI space, so that it is also matching other SPM templates
+1. Call `spm_auto_reorient()` on the structural in MNI space, so that it is also matching other SPM templates
 2. Manually review and fix the misoriented structural images
 3. Coregister the functional to SPM12 EPI template (this allows a correct translation matrix and a good basis for rotation)
 4. Coregister the functional onto the structural (this fine-tunes rotation to precisely match the subject's structural)
@@ -46,11 +53,20 @@ For a comparison of various methods for AC-PC reorientation, the following artic
 
 `Liu, Yuan, and Benoit M. Dawant. "Automatic detection of the anterior and posterior commissures on MRI scans using regression forests." 2014 36th Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE, 2014.`
 
+## Citation
+
+Please cite this work as following (a paper is in preparation but not available yet):
+
+(Zenodo ref here)
+
 ## Authors
-The code was originally written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium) and additional modifications by Stephen Karl Larroque (Coma Science Group, GIGA-Consciousness, University of Liege, Belgium).
+
+This software was developed by Stephen Karl Larroque (Coma Science Group, GIGA-Consciousness, University of Liege, Belgium).
+
+The code is a fork from [spm_auto_reorient](<https://github.com/CyclotronResearchCentre/spm_auto_reorient>) (v1) written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium).
 
 ## License
-General Public License (GPL) v2
+General Public License (GPL) v2.
 
 ## Contact
-For questions or suggestions, contact Christophe Phillips (c.phillips_at_ulg.ac.be).
+For questions or suggestions, contact Stephen Karl Larroque at: stephen dot larroque at uliege dot be.
