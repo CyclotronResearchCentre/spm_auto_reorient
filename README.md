@@ -1,4 +1,5 @@
 # spm_auto_reorient_coregister : Cross-platform automatic AC-PC realignment/reorientation and coregistration robust to brain damage in SPM
+
 [![GitHub release](https://img.shields.io/github/release/lrq3000/spm_auto_reorient_coregister.svg)](https://github.com/lrq3000/spm_auto_reorient_coregister/releases/)
 [![DOI](https://zenodo.org/badge/178199397.svg)](https://zenodo.org/badge/latestdoi/178199397)
 
@@ -9,6 +10,7 @@ This is a set of routines to perform "auto reorient" and "auto coregistration" i
 ![Automatic coregistration example using spm_auto_coreg.m](img/coreg.png)
 
 ## Description
+
 Setting up the AC-PC and reorienting images is a recurrent issue in between-subjects group analyses, since they rely on coregistration methods that, like the "unified segmentation" of SPM12, are for most sensitive to initial conditions (the starting orientation of the image). This routine is a somewhat enhanced version of the original code by [John Ashburner](https://en.wikibooks.org/wiki/SPM/How-to#How_to_automatically_reorient_images?).
 
 The main function, `spm_auto_reorient.m`, automatically (but approximately) calculates a reorientation transform onto a target template in MNI space, in two steps: 1. a non-linear coregistration of the input image onto a target template in MNI space using spm_affreg is calculated, then another transform is calculated using Mutual Information on a joint histogram (spm_coreg), and then applies only the rigid-body transform part of both coregistrations to reorient the input image. This allows to mainly set the AC location and correct for head rotation and place the origin on AC, in order to further proceed with the segmentation/normalisation of the image. This relies on a "template matching" principle (as in the old normalize function), you therefore ought to specify the appropriate template/reference image (we provide some).
@@ -20,11 +22,13 @@ Another function, `spm_auto_coreg.m`, expands on the same ideas to allow coregis
 ## Install
 
 To install this tool :
+
 * copy `spm_auto_reorient.m` and `spm_auto_coreg.m` in your `spm` folder. This will allow the command `spm_auto_reorient()` and `spm_auto_coreg()` to be called from command-line (if no argument is given, a file selector dialog will open).
 * copy `T1_template_CAT12_rm_withskull.nii` to your `spm/canonical` folder. This is a template generated on 10 subjects using CAT12 that were manually reoriented to AC-PC and averaged, this provides better performance for reorientation than the more blurry MNI template. Note that this template is slightly better aligned to the AC-PC plane than the original MNI template, so that there may be a slight rotation bias compared to MNI if you use this custom template (usually it's mostly unnoticeable and this should have no influence if afterwards you do the SPM normalization on MNI on your data).
 * Add `spm12` and `spm12\toolbox\OldNorm` to the path in MATLAB.
 
 The tool can be included in the batching system of SPM12 by : 
+
 - copying the `spm_cfg_autoreorient.m` file to the `spm/config` sub-directory. Then this module can be included in any processing pipeline;
 - optionally, if you want an easy access from the SPM's spatial pull-down menu directly, by overwriting the `spm_cfg.m` with the one provided here (BEWARE: this was not updated since a long time, this may break down your SPM install!).
 
@@ -40,9 +44,11 @@ General guideline:
 * If you want to reorient another modality (usually with less resolution), or an anisotropic T1, or an isotropic T1 but on your own custom T1 template, use `spm_auto_coregister`.
 
 ## Guarantee
+
 There is no guarantee that this will work 100% of the times, although it was observed to produce good results with our own data (young and old healthy subjects, AD/PD patients, most of brain damaged patients even with significant movement or metal artefacts).
 
 The best results we got were by doing the following steps:
+
 1. Call `spm_auto_reorient()` on the structural in MNI space, so that it is also matching other SPM templates
 2. Manually review and fix the misoriented structural images
 3. Coregister the functional to SPM12 EPI template (this allows a correct translation matrix and a good basis for rotation)
@@ -66,8 +72,14 @@ This software was developed by Stephen Karl Larroque (Coma Science Group, GIGA-C
 
 The code is a fork from [spm_auto_reorient](<https://github.com/CyclotronResearchCentre/spm_auto_reorient>) (v1) written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium).
 
+## Similar projects
+
+We later found that K. Nemoto made a similar enhanced algorithm back in 2017, based on centering to the origin (instead of translating to match a template for us - what we call a pre-coregistration step) before applying the original auto_reorient.m script but tweaking it to apply a coregistration on a DARTEL template (instead of SPM12 ones in the original script, or a custom made template using CAT12 for this one). The resulting script, [acpc_coreg.m](https://web.archive.org/web/20180727093129/http://www.nemotos.net/scripts/acpc_coreg.m), can be found on [nemotos.net](https://www.nemotos.net/?p=1892).
+
 ## License
+
 General Public License (GPL) v2.
 
 ## Contact
+
 For questions or suggestions, contact Stephen Karl Larroque at: stephen dot larroque at uliege dot be.
