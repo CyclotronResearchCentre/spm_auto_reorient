@@ -52,7 +52,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % - the header of the selected images is modified, so are the other images
 %   if any were specified.
 %__________________________________________________________________________
-% v1.3.4
+% v1.3.5
 % Copyright (C) 2011 Cyclotron Research Centre
 % Copyright (C) 2019-2020 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
