@@ -29,7 +29,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 %
 % IN:
 % - p       : filename or list of filenames of images to reorient (as `ls` returns).
-%             For 4D nifti files, please select only the first volume, and not the others (they will also be reoriented).
+%             For 4D nifti files, please select only the first volume (eg, p='bold.nii,1'), and not the others (they will also be reoriented).
 % - i_type  : template image type 'T1group' (default), 'T1canonical', 'T1', 'T2', 'PET', 'EPI',...
 %             i.e. any of the templates provided by SPM. 'T1group' is an average computed from
 %             normalized T1 images from 10 subjects with intensity normalization and without skull
@@ -38,9 +38,11 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 %             the target realignment to your liking. Special option: can also be the path to a nifti file
 %             (this allows cross-modality coregistration, no smoothing is applied here then, in this case
 %             it is advised to use mode 'mi' only).
-% - p_other : cell array of filenames of other images to be reoriented as
-%             the corresponding p image. Should be of same length as p, or
-%             left empty (default).
+% - p_other : cell array of filenames of other images to be reoriented as the corresponding p image.
+%             Should be of same length as p, or left empty (default). p_other should only include OTHER files
+%             than the one specified in p, as SPM12 has a peculiar way to handle the reorientaton of 4D NIfTI files,
+%             since the orientation matrix seem to be stored only once in the headers, reorienting the first volume
+%             will also reorient all other volumes. Hence, if you don't have any other NIfTI file (and not volume) to reorient, simply set p_other=[].
 % - mode    : coregister using the old 'affine' euclidian method, or the new 'mi' Mutual Information on Joint Histogram method or 'both' (first affine then mi) (default)
 % - smooth_factor : smoothing kernel (isotropic) for the affine coregistration. Default: 20. Usually, a big kernel helps in coregistering
 %             to template, particularly for brain damaged patients, but might also help with healthy volunteers.
@@ -52,7 +54,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % - the header of the selected images is modified, so are the other images
 %   if any were specified.
 %__________________________________________________________________________
-% v1.3.5
+% v1.3.6
 % Copyright (C) 2011 Cyclotron Research Centre
 % Copyright (C) 2019-2020 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
