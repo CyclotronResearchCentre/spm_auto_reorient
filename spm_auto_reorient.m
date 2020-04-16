@@ -58,7 +58,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % Copyright (C) 2011 Cyclotron Research Centre
 % Copyright (C) 2019-2020 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
-% Code originally written by Carlton Chu, FIL, UCL, London, UK
+% Code originally written by Carlton Chu and John Ashburner, FIL, UCL, London, UK
 % Modified and extended by Christophe Phillips, CRC, ULg, Liege, Belgium
 % Updated and extended by Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege, Belgium
 %

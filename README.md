@@ -70,7 +70,7 @@ Please cite this work as following (a paper is in preparation but not available 
 
 This software was developed by Stephen Karl Larroque (Coma Science Group, GIGA-Consciousness, University of Liege, Belgium).
 
-The code is a fork from [spm_auto_reorient](<https://github.com/CyclotronResearchCentre/spm_auto_reorient>) (v1) written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium).
+The code is a fork from [spm_auto_reorient](<https://github.com/CyclotronResearchCentre/spm_auto_reorient>) (v1) written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium). It seems the very root of the code is from [John Ashburner](https://en.wikibooks.org/wiki/SPM/How-to#How_to_automatically_reorient_images?), although the history is unclear since no version control system was used for the initial release (so please excuse us if there is any inaccuracies and please let us know, we will happily update it).
 
 ## Similar projects
 
