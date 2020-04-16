@@ -28,7 +28,8 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 % It is advised to check (and fix if necessary) manually the result.
 %
 % IN:
-% - p       : filename or list of filenames of images to reorient (as `ls` returns)
+% - p       : filename or list of filenames of images to reorient (as `ls` returns).
+%             For 4D nifti files, please select only the first volume, and not the others (they will also be reoriented).
 % - i_type  : template image type 'T1group' (default), 'T1canonical', 'T1', 'T2', 'PET', 'EPI',...
 %             i.e. any of the templates provided by SPM. 'T1group' is an average computed from
 %             normalized T1 images from 10 subjects with intensity normalization and without skull
@@ -53,7 +54,7 @@ function spm_auto_reorient(p,i_type,p_other,mode,smooth_factor,flags_affine,flag
 %__________________________________________________________________________
 % v1.3.4
 % Copyright (C) 2011 Cyclotron Research Centre
-% Copyright (C) 2019 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
+% Copyright (C) 2019-2020 Stephen Karl Larroque, Coma Science Group, GIGA-Consciousness, University & Hospital of Liege
 %
 % Code originally written by Carlton Chu, FIL, UCL, London, UK
 % Modified and extended by Christophe Phillips, CRC, ULg, Liege, Belgium
@@ -260,7 +261,7 @@ fprintf('Automatic reorientation done.\n');
 end %endfunction
 
 
-% % test
+% == Main test ==
 % p = spm_select(1,'image')
 % pt = spm_select(Inf,'image'); p_other = {pt}
 % i_type = []; % use default
