@@ -35,12 +35,14 @@ The tool can be included in the batching system of SPM12 by :
 
 Type `help spm_auto_reorient`, for all the details and various options for reorientation of a T1.
 
-Type `help spm_auto_coregister` for coregistering options.
+Type `help spm_auto_coreg` for coregistering options.
+
+Both scripts allows to use SPM filedialogs GUI, by simply typing `spm_auto_reorient()` or `spm_auto_coreg` in the MATLAB prompt.
 
 General guideline:
 
 * If you want to reorient isotropic T1, use `spm_auto_reorient`.
-* If you want to reorient another modality (usually with less resolution), or an anisotropic T1, or an isotropic T1 but on your own custom T1 template, use `spm_auto_coregister`.
+* If you want to reorient another modality (usually with less resolution), or an anisotropic T1, or an isotropic T1 but on your own custom T1 template, use `spm_auto_coreg`.
 
 ## Guarantee
 
