@@ -1,7 +1,6 @@
 # spm_auto_reorient_coregister : Cross-platform automatic AC-PC realignment/reorientation and coregistration robust to brain damage in SPM
 
 [![GitHub release](https://img.shields.io/github/release/lrq3000/spm_auto_reorient_coregister.svg)](https://github.com/lrq3000/spm_auto_reorient_coregister/releases/)
-[![DOI](https://zenodo.org/badge/178199397.svg)](https://zenodo.org/badge/latestdoi/178199397)
 
 Cross-platform automatic AC-PC realignment/reorientation and coregistration for both healthy volunteers and brain damaged patients using template matching in SPM 12.
 
