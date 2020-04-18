@@ -1,6 +1,6 @@
 # spm_auto_reorient_coregister : Cross-platform automatic AC-PC realignment/reorientation and coregistration robust to brain damage in SPM
 
-# This project is deprecated, please use the new one at: https://github.com/lrq3000/spm_reorient_auto
+# This project is deprecated, please use the new one at: https://github.com/lrq3000/auto_acpc_reorient
 
 [![GitHub release](https://img.shields.io/github/release/lrq3000/spm_auto_reorient_coregister.svg)](https://github.com/lrq3000/spm_auto_reorient_coregister/releases/)
 
