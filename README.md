@@ -15,6 +15,6 @@ And I have NOT checked when it breaks down in term of rotation angle or displace
 
 The code was originally written by Carlton Chu (FIL, UCL, London, UK) then modified and extended by Christophe Phillips (Cyclotron Research Centre, University of Liege, Belgium).
 
-For questions or suggestions, contact Christophe Phillips (c.phillips_at_ulg.ac.be).
+For questions or suggestions, contact Christophe Phillips (c.phillips_at_uliege.be).
 
 [![DOI](https://zenodo.org/badge/46079046.svg)](https://zenodo.org/badge/latestdoi/46079046)
